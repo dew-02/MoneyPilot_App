@@ -394,9 +394,11 @@ class _EditProfileBottomSheetState extends ConsumerState<_EditProfileBottomSheet
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.profile.fullName);
-    _selectedCurrencyCode = widget.profile.currencyCode.isNotEmpty
+    final profileCode = widget.profile.currencyCode.isNotEmpty
         ? widget.profile.currencyCode
         : 'LKR';
+    final isValidCode = _currencyOptions.any((opt) => opt['code'] == profileCode);
+    _selectedCurrencyCode = isValidCode ? profileCode : 'LKR';
     _selectedCurrencySymbol = widget.profile.currencySymbol.isNotEmpty
         ? widget.profile.currencySymbol
         : 'Rs.';
@@ -568,7 +570,9 @@ class _EditProfileBottomSheetState extends ConsumerState<_EditProfileBottomSheet
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedCurrencyCode,
+                    initialValue: _currencyOptions.any((opt) => opt['code'] == _selectedCurrencyCode)
+                        ? _selectedCurrencyCode
+                        : 'LKR',
                     decoration: InputDecoration(
                       prefixIcon: const Icon(
                         Icons.currency_exchange_rounded,

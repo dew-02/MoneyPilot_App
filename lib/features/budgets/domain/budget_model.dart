@@ -109,6 +109,11 @@ class Budget {
         ? spentNum.toDouble()
         : (double.tryParse(spentNum.toString()) ?? 0.0);
 
+    final rawPeriod = map['period'] as String? ?? 'Monthly';
+    final normalizedPeriod = rawPeriod.isNotEmpty
+        ? rawPeriod[0].toUpperCase() + rawPeriod.substring(1).toLowerCase()
+        : 'Monthly';
+
     return Budget(
       id: map['id']?.toString() ?? map['budget_id']?.toString() ?? '',
       userId: map['user_id']?.toString(),
@@ -118,7 +123,7 @@ class Budget {
       categoryColor: catColor,
       amount: parsedAmount,
       spent: parsedSpent,
-      period: (map['period'] as String? ?? 'Monthly'),
+      period: normalizedPeriod,
       month: parsedMonth,
       year: parsedYear,
       startDate: start,

@@ -47,7 +47,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
   bool get isEditing => widget.existingBudget != null;
 
   late final List<String> _categories;
-  final List<String> _periods = ['Monthly', 'Weekly', 'Quarterly'];
+  final List<String> _periods = ['Monthly', 'Weekly', 'Quarterly', 'Yearly'];
 
   @override
   void initState() {
@@ -72,7 +72,21 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
       final b = widget.existingBudget!;
       _selectedScope = BudgetScope.category;
       _selectedCategory = b.category;
-      _selectedPeriod = b.period;
+      
+      final matchedPeriod = _periods.firstWhere(
+        (p) => p.toLowerCase() == b.period.toLowerCase(),
+        orElse: () {
+          if (b.period.isNotEmpty) {
+            return b.period[0].toUpperCase() + b.period.substring(1).toLowerCase();
+          }
+          return 'Monthly';
+        },
+      );
+      if (!_periods.contains(matchedPeriod)) {
+        _periods.add(matchedPeriod);
+      }
+      _selectedPeriod = matchedPeriod;
+
       _amountController = TextEditingController(
         text: b.amount % 1 == 0 ? b.amount.toInt().toString() : b.amount.toString(),
       );
@@ -537,7 +551,9 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            value: _selectedCategory,
+                            value: _categories.contains(_selectedCategory)
+                                ? _selectedCategory
+                                : (_categories.isNotEmpty ? _categories.first : null),
                             isExpanded: true,
                             disabledHint: Text(_selectedCategory),
                             icon: const Icon(
@@ -689,7 +705,12 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
-                          value: _selectedPeriod,
+                          value: _periods.contains(_selectedPeriod)
+                              ? _selectedPeriod
+                              : (_periods.firstWhere(
+                                  (p) => p.toLowerCase() == _selectedPeriod.toLowerCase(),
+                                  orElse: () => _periods.first,
+                                )),
                           isExpanded: true,
                           icon: const Icon(
                             Icons.keyboard_arrow_down_rounded,

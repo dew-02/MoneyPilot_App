@@ -331,7 +331,11 @@ class _AddReminderScreenState extends ConsumerState<AddReminderScreen> {
                           ),
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
-                            initialValue: _selectedCategoryName,
+                            initialValue: (categories.isNotEmpty
+                                    ? categories.any((c) => c.name == _selectedCategoryName)
+                                    : AppCategories.defaultCategories.contains(_selectedCategoryName))
+                                ? _selectedCategoryName
+                                : null,
                             decoration: InputDecoration(
                               hintText: 'Select category',
                               prefixIcon: Icon(

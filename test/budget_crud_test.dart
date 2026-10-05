@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:moneypilot/app.dart';
 import 'package:moneypilot/features/budgets/data/budgets_provider.dart';
+import 'package:moneypilot/features/budgets/domain/budget_model.dart';
 import 'package:moneypilot/features/budgets/presentation/add_budget_screen.dart';
 import 'package:moneypilot/features/budgets/presentation/budgets_screen.dart';
 
@@ -132,6 +133,32 @@ void main() {
       // Should return to BudgetsScreen
       expect(find.byType(BudgetsScreen), findsOneWidget);
       expect(find.text('Budget limit: Rs. 28,000'), findsOneWidget);
+    });
+
+    testWidgets('AddBudgetScreen renders without assertion failure when existing budget has lowercase period', (tester) async {
+      final existingBudget = Budget(
+        id: 'test-budget-1',
+        category: 'Food & Dining',
+        amount: 25000,
+        period: 'monthly',
+        createdAt: DateTime.now(),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: AddBudgetScreen(
+              existingBudget: existingBudget,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AddBudgetScreen), findsOneWidget);
+      expect(find.text('Edit budget'), findsOneWidget);
+      expect(find.text('Monthly'), findsOneWidget);
     });
   });
 }
